@@ -156,8 +156,6 @@ python3 scripts/quick_search.py "rebirth revenge wealthy-family"
 
 ## How Agent / Skill / Reference Work Together
 
-GitHub Markdown files support diagrams from `mermaid` code blocks, so the architecture and workflow below render directly on GitHub.
-
 ```mermaid
 flowchart LR
   User["Creator / Agent User"] --> Command["Command<br/>~analyze / ~plan / ~write N / ~storyboard-*"]

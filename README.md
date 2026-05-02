@@ -156,8 +156,6 @@ python3 scripts/quick_search.py "重生 复仇 豪门"
 
 ## Agent / Skill / Reference 如何协作
 
-GitHub Markdown 文件支持 `mermaid` 代码块渲染图表，所以下面的架构和流程图会在 GitHub 页面中直接显示。
-
 ```mermaid
 flowchart LR
   User["创作者 / Agent 使用者"] --> Command["命令<br/>~analyze / ~plan / ~write N / ~storyboard-*"]

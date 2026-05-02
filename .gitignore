@@ -1,6 +1,4 @@
 # Secrets and local environment
-.env
-.env.*
 !.env.example
 *.local
 
@@ -45,3 +43,5 @@ skills/tvc-director/
 *.bak
 .DS_Store
 Thumbs.db
+config.bat
+node_modules
