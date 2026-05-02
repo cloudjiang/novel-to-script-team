@@ -20,86 +20,31 @@
 - 详细说明：`./AGENT-STATE-GUIDE.md`
 
 [工程结构]
-project/
-├── AGENTS.md                  # 通用 Agent 工作流指南（主入口）
-├── CLAUDE.md                  # Claude Code 兼容入口
-├── SKILL.md
-├── agents/                     # 17 个 Agent
-│   ├── knowledge-curator.md
-│   ├── novel-analyzer.md
-│   ├── insight-architect.md       # 新增：洞察架构师
-│   ├── episode-architect.md
-│   ├── script-writer.md
-│   ├── script-comparator.md    # 新增：剧本对比分析师
-│   ├── review-director.md
-│   ├── continuity-recorder.md
-│   ├── storyboard-director.md  # 新增：分镜导演
-│   ├── storyboard-artist.md    # 新增：分镜师
-│   ├── storyboard-coach.md     # 新增：分镜教练
-│   ├── art-designer.md         # 新增：服化道
-│   ├── animator.md             # 新增：动画师
-│   ├── visual-storyteller.md   # 新增：视觉叙事专家
-│   ├── emotion-architect.md    # 新增：情绪设计师
-│   ├── image-generator.md      # 新增：文生图
-│   └── image-to-prompt.md      # 新增：图片反推提示词
-├── skills/                     # 25 个 Skill
-│   ├── knowledge-curation-skill/
-│   ├── adaptation-analysis-skill/
-│   ├── episode-planning-skill/
-│   ├── script-writing-skill/
-│   ├── script-review-skill/
-│   ├── compliance-review-skill/
-│   ├── continuity-record-skill/
-│   ├── storyboard-handoff-skill/
-│   ├── director-skill/                    # 新增：导演分析
-│   ├── film-storyboard-skill/             # 新增：影视分镜
-│   ├── seedance-storyboard-skill/         # 新增：Seedance 分镜
-│   ├── art-design-skill/                  # 新增：服化道设计
-│   ├── animator-skill/                    # 新增：动画师
-│   ├── script-analysis-review-skill/      # 新增：导演分析审核
-│   ├── art-direction-review-skill/        # 新增：服化道审核
-│   ├── seedance-prompt-review-skill/      # 新增：Seedance 提示词审核
-│   ├── storyboard-review-skill/           # 新增：分镜审核
-│   ├── storyboard-coaching-skill/         # 新增：分镜教练
-│   ├── hit-script-retrieval-skill/        # 新增：爆款剧本检索
-│   ├── one-by-one-comparison-skill/       # 新增：逐一对比分析
-│   ├── comparative-review-skill/          # 新增：对比审核
-│   ├── style-analysis-skill/              # 新增：风格分析
-│   ├── show-dont-tell-skill/              # 新增：Show Don't Tell
-│   ├── image-generation-skill/            # 新增：文生图
-│   └── image-to-prompt-skill/             # 新增：图片反推提示词
-├── references/                 # 25 个参考文档（+ index.md）
-│   ├── index.md
-│   ├── 00-first-principles.md
-│   ├── 01-adaptation-system.md
-│   ├── 02-episode-architecture.md
-│   ├── 03-script-writing-standard.md
-│   ├── 04-review-gates.md
-│   ├── 05-compliance-boundaries.md
-│   ├── 06-storyboard-handoff.md
-│   ├── 07-knowledge-curation.md           # 知识管理
-│   ├── 08-camera-and-cinematography.md    # 镜头与摄影
-│   ├── 09-storyboard-methodology.md       # 分镜方法论
-│   ├── 10a-action-dialogue-scenes.md     # 动作与对话场景
-│   ├── 10b-atmosphere-fantasy.md         # 氛围与奇幻视觉
-│   ├── 10c-suspense-montage.md           # 悬疑与蒙太奇
-│   ├── 11a-seedance-prompt-methodology.md # Seedance 提示词
-│   ├── 11b-image-motion-prompt.md        # 图像与动态提示词
-│   ├── 11c-sora2-rhythm-control.md       # Sora2 与节奏控制
-│   ├── 12-genre-specific-techniques.md    # 类型化技巧
-│   ├── 13-show-dont-tell-methodology.md   # 新增：Show Don't Tell 方法论
-│   ├── 14-story-psychology.md             # 新增：故事心理学
-│   ├── 15-color-psychology.md             # 新增：色彩心理学
-│   ├── 16-dramatic-principles.md          # 新增：剧作原理
-│   ├── 17-lighting-narrative.md           # 新增：光影叙事
-│   ├── 18-theme-selection-philosophy.md   # 新增：题材选择哲学
-│   ├── 19-micro-drama-storyboard-system.md # 新增：微短剧分镜体系
-│   └── 20-frame-description-elements.md # 新增：帧图描述 26 元素清单
-├── knowledge/                  # 知识管理索引与吸收记录
-├── scripts/
-│   ├── improved_hybrid_search.py    # 混合搜索引擎（语义+关键词+男女频分类）
-│   └── ...
-└── outputs/                    # 本地产出目录（被 Git 忽略）
+
+```text
+novel-to-script-team/
+├── AGENTS.md                    # 通用 Agent 工作流指南（主入口）
+├── CLAUDE.md                    # Claude Code 兼容入口
+├── SKILL.md                     # 项目 Skill 元信息
+├── README.md                    # 中文说明
+├── README_en.md                 # 英文说明
+├── AGENT-STATE-GUIDE.md         # Resumable Subagents 指南
+├── agents/                      # Agent 角色定义
+├── skills/                      # Skill 执行规则
+├── references/                  # 核心方法论与执行标准
+├── knowledge/                   # 知识索引与吸收记录
+├── scripts/                     # 工具脚本
+└── outputs/                     # 本地产出目录（被 Git 忽略）
+```
+
+关键目录说明：
+
+- `agents/`：定义每个 Agent 的职责、输入、输出和协作边界。
+- `skills/`：定义可执行的工作规则、审核标准、分镜/图片/检索流程。
+- `references/`：稳定方法论和运行时优先参考资料。
+- `knowledge/`：知识注册表、吸收映射和项目级记忆索引。
+- `scripts/`：检索、图片生成、图片反推、批处理等辅助脚本。
+- `outputs/`：所有项目产物的本地目录，不随开源仓库分发。
 
 [知识层级]
 1. **核心执行标准**（运行时必读）：`references/`
