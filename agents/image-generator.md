@@ -88,7 +88,7 @@ color: orange
 [协作模式]
     你是 Showrunner 调度的子 Agent：
     1. 收到 `~generate-images` 指令后执行
-    2. 确认 `.env` 中有 `NANO_BANANA_API_KEY`
+    2. 确认 `.env` 中有 `NANO_BANANA_API_KEY` 和 `NANO_BANANA_BASE_URL`
     3. 按顺序执行四个步骤（角色 → 物品 → 场景 → 帧图）
     4. 帧图步骤：读取 `03-frame-requests.md`，按集生成到 `images/frames/ep<N>/`
     5. 每步完成后检查输出：确认图片文件存在且非空

@@ -29,9 +29,20 @@ Use it for:
 - **Storyboard/video handoff**: supports both a film-storyboard flow and a Seedance prompt flow.
 - **Optional media tools**: image generation, image-to-prompt reverse prompting, and SkyReels batch scripts.
 
+## Why It Stands Out
+
+- **A production system, not a prompt pack**: each stage has clear inputs, deliverables, owner agents, review gates, and revision paths.
+- **End-to-end text-to-video preparation**: covers adaptation analysis, insight extraction, episode planning, emotional design, episode scripts, continuity, storyboards, frame requests, and video prompts.
+- **Local hit-script retrieval**: add your own licensed corpus under `knowledge/hit-scripts-md/` so writing can reference pacing, hooks, payoff, and phrasing patterns.
+- **Review is built into the loop**: business review, compliance review, style analysis, one-by-one comparison, and final review drive revision instead of merely reporting issues.
+- **Visual storytelling first**: dedicated Show Don’t Tell checks turn psychology into visible action, expressions, props, scenes, and camera language.
+- **Provider-neutral media tooling**: API keys, base URLs, models, and service endpoints for image generation, reverse prompting, and video batching are configurable via `.env` or process env.
+- **Resumable multi-agent workspace**: `outputs/{script_name}/.agent-state.json` preserves project context for long-running adaptation work.
+- **Clear open-source boundary**: the repo provides methodology and tools; corpora, secrets, generated outputs, and provider accounts stay under the user's control.
+
 ## Open-Source Notes
 
-This repository provides the Agent/Skill workflow, core reference methodology, and utility scripts for novel adaptation, script review, storyboard planning, and video-prompt generation. Generated outputs are written locally under `outputs/{script_name}/`; image/video scripts require the relevant API keys in `.env`.
+This repository provides the Agent/Skill workflow, core reference methodology, and utility scripts for novel adaptation, script review, storyboard planning, and video-prompt generation. Generated outputs are written locally under `outputs/{script_name}/`; image/video scripts require the relevant API keys, base URLs, and optional models in `.env` or process environment variables.
 
 ### Using Hit-Script Retrieval
 
@@ -99,17 +110,23 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Configure API keys (only required for image/video scripts):
+Configure APIs (only required for image/video scripts):
 
 ```bash
 cp .env.example .env
-# Edit .env and fill in the keys you need.
+# Edit .env and fill in the keys, base URLs, and optional models you need.
 ```
 
-| Variable | Used by | Required |
+| Variable | Purpose | Required |
 |----------|---------|----------|
-| `NANO_BANANA_API_KEY` | `scripts/generate_image.py`, `scripts/reverse_prompt.py` | Only for image generation / reverse prompting |
-| `SKYREELS_API_KEY` | `scripts/ava_skyreels_batch.py` | Only for SkyReels batch video jobs |
+| `NANO_BANANA_API_KEY` | Auth for image generation and reverse prompting | Required only by `scripts/generate_image.py` and `scripts/reverse_prompt.py` |
+| `NANO_BANANA_BASE_URL` | OpenAI-compatible Base URL, e.g. `https://your-provider.example/v1` | Required for image generation / reverse prompting; no vendor URL is hardcoded |
+| `NANO_BANANA_IMAGE_MODEL` | Image generation model | Optional; defaults to `gemini-3.1-flash-image-preview` |
+| `NANO_BANANA_REVERSE_MODEL` | Image-to-prompt model | Optional; defaults to `gemini-3.1-pro-preview` |
+| `SKYREELS_API_KEY` | Auth for SkyReels image-to-video jobs | Required only by `scripts/ava_skyreels_batch.py` |
+| `SKYREELS_BASE_URL` | SkyReels API Base URL | Optional; defaults to the official gateway and can be overridden |
+| `SKYREELS_SUBMIT_URL` / `SKYREELS_TASK_URL` | SkyReels submit/query endpoints | Optional; use for non-standard gateways |
+| `TMPFILES_UPLOAD_URL` / `CATBOX_UPLOAD_URL` | Upload endpoints used before video batching | Optional; replace with your own upload service if needed |
 
 ### 2. Read the Agent Guide
 
@@ -345,9 +362,9 @@ novel-to-script-team/
 ├── agents/                      # Agent role definitions
 ├── skills/                      # Skill execution rules
 ├── references/                  # Core methodology
-├── knowledge/                   # Knowledge indexes and ingestion records
+├── knowledge/                   # Knowledge indexes, licensed corpus, and ingestion records
 ├── scripts/                     # Utility scripts
-└── outputs/                     # Local generated outputs, ignored by .gitignore
+└── outputs/                     # Local generated outputs
 ```
 
 Local output example:

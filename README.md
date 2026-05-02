@@ -29,9 +29,20 @@ Novel-to-Script-Team 不是单个提示词，而是一套可复用的创作生�
 - **分镜视频化**：支持标准影视分镜流和 Seedance 提示词流。
 - **图片/视频工具**：可选调用图片生成、图片反推、SkyReels 批处理等脚本。
 
+## 项目卖点
+
+- **不是提示词合集，而是生产系统**：每个阶段都有明确输入、产物、责任 Agent、审核门槛和回改路径，适合团队协作和重复交付。
+- **从文字到视频前置资产全覆盖**：覆盖改编分析、洞察、分集、情绪设计、单集剧本、连续性、分镜、帧图需求和视频提示词。
+- **爆款参考可本地化**：可把自有授权剧本放入 `knowledge/hit-scripts-md/`，让写作阶段检索节奏、钩子、爽点、虐点和表达方式。
+- **审核不是事后补丁**：业务审核、合规审核、风格分析、逐一对比、综合复核贯穿流程，失败后进入回改而不是直接交付。
+- **视觉化导向**：专门检查 Show Don’t Tell，把心理描写转成动作、表情、道具、场面和镜头语言。
+- **平台中立、可替换 Provider**：图片生成、图片反推、视频批处理的 API Key、Base URL、模型和端点均可通过 `.env` 或环境变量配置。
+- **可恢复的多 Agent 工作台**：通过 `outputs/{剧本名}/.agent-state.json` 保存项目上下文，支持长项目分阶段继续。
+- **开源安全边界清晰**：仓库提供方法论和工具；语料、密钥、运行产物、供应商账号都由使用者本地配置。
+
 ## 开源版说明
 
-本仓库提供 Agent/Skill 工作流、核心方法论和工具脚本，可以直接用于小说改编、剧本审核、分镜规划和视频提示词生成。运行产物会写入本地 `outputs/{剧本名}/`，图片/视频脚本需要你在 `.env` 中配置对应 API Key。
+本仓库提供 Agent/Skill 工作流、核心方法论和工具脚本，可以直接用于小说改编、剧本审核、分镜规划和视频提示词生成。运行产物会写入本地 `outputs/{剧本名}/`，图片/视频脚本需要你在 `.env` 或环境变量中配置对应 API Key、Base URL 和可选模型。
 
 ### 爆款剧本检索怎么用
 
@@ -99,17 +110,23 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-配置 API Key（仅图片/视频相关脚本需要）：
+配置 API（仅图片/视频相关脚本需要）：
 
 ```bash
 cp .env.example .env
-# 编辑 .env，填入需要的 key
+# 编辑 .env，填入需要的 key、base url 和可选模型
 ```
 
 | 变量 | 用途 | 是否必需 |
 |------|------|----------|
-| `NANO_BANANA_API_KEY` | `scripts/generate_image.py`、`scripts/reverse_prompt.py` | 仅图片生成/反推需要 |
-| `SKYREELS_API_KEY` | `scripts/ava_skyreels_batch.py` | 仅 SkyReels 视频批处理需要 |
+| `NANO_BANANA_API_KEY` | 图片生成、图片反推鉴权 | 仅 `scripts/generate_image.py`、`scripts/reverse_prompt.py` 需要 |
+| `NANO_BANANA_BASE_URL` | OpenAI-compatible Base URL，例如 `https://your-provider.example/v1` | 图片生成/反推必需；仓库不默认写死供应商地址 |
+| `NANO_BANANA_IMAGE_MODEL` | 图片生成模型 | 可选，默认 `gemini-3.1-flash-image-preview` |
+| `NANO_BANANA_REVERSE_MODEL` | 图片反推模型 | 可选，默认 `gemini-3.1-pro-preview` |
+| `SKYREELS_API_KEY` | SkyReels 图片转视频鉴权 | 仅 `scripts/ava_skyreels_batch.py` 需要 |
+| `SKYREELS_BASE_URL` | SkyReels API Base URL | 可选；默认官方 gateway，可被环境变量覆盖 |
+| `SKYREELS_SUBMIT_URL` / `SKYREELS_TASK_URL` | SkyReels 提交/查询端点 | 可选；对接非标准网关时使用 |
+| `TMPFILES_UPLOAD_URL` / `CATBOX_UPLOAD_URL` | 视频批处理前的图片上传服务端点 | 可选；可替换为自己的上传服务 |
 
 ### 2. 阅读 Agent 指南
 
@@ -345,9 +362,9 @@ novel-to-script-team/
 ├── agents/                      # Agent 角色定义
 ├── skills/                      # Skill 执行规则
 ├── references/                  # 核心方法论
-├── knowledge/                   # 知识索引与吸收记录
+├── knowledge/                   # 知识索引、自有授权语料与吸收记录
 ├── scripts/                     # 工具脚本
-└── outputs/                     # 本地产出目录，被 .gitignore 忽略
+└── outputs/                     # 本地产出目录
 ```
 
 本地生成目录示例：

@@ -52,9 +52,9 @@ color: teal
     4. **资产复用**：从历史项目图片中提取提示词，复用到新项目
 
 [API 配置]
-    - API URL：`https://537-ai.net/v1/chat/completions`
-    - 模型：`gemini-3.1-pro-preview`
-    - API Key：从 `.env` 文件读取 `NANO_BANANA_API_KEY`
+    - Base URL：从 `.env` 或环境变量读取 `NANO_BANANA_BASE_URL`
+    - 模型：默认 `gemini-3.1-pro-preview`，可用 `NANO_BANANA_REVERSE_MODEL` 覆盖
+    - API Key：从 `.env` 或环境变量读取 `NANO_BANANA_API_KEY`
     - 调用格式：OpenAI 格式（使用 `openai` 库）
     - 图片传递：Base64 编码（`data:image/jpeg;base64,{base64_string}`）
 

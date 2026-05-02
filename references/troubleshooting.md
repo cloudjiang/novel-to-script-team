@@ -53,10 +53,10 @@ python scripts/generate_image.py \
 ls -la .env
 
 # 检查 API key 是否配置
-grep "NANO_BANANA_API_KEY" .env
+grep "NANO_BANANA_API_KEY\|NANO_BANANA_BASE_URL" .env
 
 # 如果没有，添加 API key
-echo "NANO_BANANA_API_KEY=your_api_key_here" >> .env
+printf "NANO_BANANA_API_KEY=your_api_key_here\nNANO_BANANA_BASE_URL=https://your-provider.example/v1\n" >> .env
 ```
 
 #### 1.2 验证帧图提示词格式
@@ -446,7 +446,7 @@ cp outputs/块宇宙短片/images/frames/ep01/frame-F01.png \
 
 ```bash
 # 测试 API 连接
-curl -I https://537-ai.net/v1/chat/completions
+curl -I "$NANO_BANANA_BASE_URL/chat/completions"
 ```
 
 #### 7.2 增加超时时间

@@ -32,9 +32,9 @@ novel-to-script-team/
 ├── agents/                      # Agent 角色定义
 ├── skills/                      # Skill 执行规则
 ├── references/                  # 核心方法论与执行标准
-├── knowledge/                   # 知识索引与吸收记录
+├── knowledge/                   # 知识索引、自有授权语料与吸收记录
 ├── scripts/                     # 工具脚本
-└── outputs/                     # 本地产出目录（被 Git 忽略）
+└── outputs/                     # 本地产出目录
 ```
 
 关键目录说明：
@@ -189,7 +189,7 @@ novel-to-script-team/
 3. **Asset Image Generation（资产图生成）**
    - `image-generator` 使用 `image-generation-skill` 调用 nano banana API 生成资产图
    - 产物：`outputs/{剧本名}/images/characters/`、`outputs/{剧本名}/images/scenes/`、`outputs/{剧本名}/images/props/`
-   - 前置条件：`.env` 中配置了 `NANO_BANANA_API_KEY`
+   - 前置条件：`.env` 中配置了 `NANO_BANANA_API_KEY` 和 `NANO_BANANA_BASE_URL`
    - **可选**：如果没有 API key，可使用外部工具生成图片后手动放入对应目录
 
 4. **Seedance Prompts（Seedance 提示词 + 模式选型 + 帧图需求清单）**

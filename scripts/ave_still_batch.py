@@ -9,10 +9,10 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scripts.generate_image import load_api_key, generate_image
+from scripts.generate_image import generate_image, load_image_api_config
 
 
-def run_job(api_key, job, output_dir, timeout):
+def run_job(api_key, api_url, model, job, output_dir, timeout):
     out = output_dir / job["output_name"]
     prompt_txt = output_dir / f"{out.stem}_prompt.txt"
     refs = job.get("refs", [])
@@ -26,7 +26,7 @@ def run_job(api_key, job, output_dir, timeout):
         encoding="utf-8",
     )
 
-    img = generate_image(api_key, prompt, reference_images=refs if refs else None, timeout=timeout)
+    img = generate_image(api_key, api_url, model, prompt, reference_images=refs if refs else None, timeout=timeout)
     if not img:
         return {"id": job["id"], "status": "failed", "output": str(out)}
 
@@ -43,7 +43,7 @@ def main():
     parser.add_argument("--skip-existing", action="store_true")
     args = parser.parse_args()
 
-    api_key = load_api_key()
+    api_key, api_url, model = load_image_api_config()
     jobs_path = Path(args.jobs)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -60,7 +60,7 @@ def main():
     print(f"running {len(runnable)} jobs with max_workers={args.max_workers}")
     results = []
     with ThreadPoolExecutor(max_workers=args.max_workers) as ex:
-        futs = {ex.submit(run_job, api_key, job, output_dir, args.timeout): job for job in runnable}
+        futs = {ex.submit(run_job, api_key, api_url, model, job, output_dir, args.timeout): job for job in runnable}
         for fut in as_completed(futs):
             job = futs[fut]
             try:

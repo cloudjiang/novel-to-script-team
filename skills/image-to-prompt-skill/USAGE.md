@@ -215,7 +215,7 @@ done
 
 ## 注意事项
 
-1. **API Key 配置**：确保 `.env` 文件中配置了 `NANO_BANANA_API_KEY`
+1. **API 配置**：确保 `.env` 或环境变量中配置了 `NANO_BANANA_API_KEY` 和 `NANO_BANANA_BASE_URL`
 2. **图片格式**：支持 PNG、JPG、JPEG、WEBP、GIF 等常见格式
 3. **图片大小**：建议不超过 10MB，过大的图片可能导致 API 调用失败
 4. **敏感内容**：避免分析包含敏感内容的图片
@@ -268,7 +268,7 @@ python scripts/reverse_prompt.py \
 ### Q1: API 调用失败怎么办？
 
 **A**: 检查以下几点：
-1. `.env` 文件中是否配置了正确的 `NANO_BANANA_API_KEY`
+1. `.env` 或环境变量中是否配置了正确的 `NANO_BANANA_API_KEY` 和 `NANO_BANANA_BASE_URL`
 2. 网络连接是否正常
 3. 图片文件是否存在且可读
 4. 图片大小是否超过限制（建议 < 10MB）
@@ -305,10 +305,11 @@ done
 ```python
 from openai import OpenAI
 import base64
+import os
 
 client = OpenAI(
     api_key="your-api-key",
-    base_url="https://537-ai.net/v1"
+    base_url=os.environ["NANO_BANANA_BASE_URL"]
 )
 
 # 读取并编码图片

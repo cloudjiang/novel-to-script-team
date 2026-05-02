@@ -11,7 +11,7 @@ description: 调用 nano banana API（gemini-3.1-flash-image-preview）生成图
 2. 参考图生图：提示词 + 本地参考图（base64 编码）→ API → PNG 图片
 
 ## 前置条件
-- `.env` 文件中配置了 `NANO_BANANA_API_KEY`
+- `.env` 或环境变量中配置了 `NANO_BANANA_API_KEY` 和 `NANO_BANANA_BASE_URL`
 - Python 3 已安装
 - `requests` 库已安装（`pip install requests`）
 
@@ -28,9 +28,9 @@ description: 调用 nano banana API（gemini-3.1-flash-image-preview）生成图
 ## 执行流程
 
 ### 步骤1：环境检查
-确认 `.env` 中有 `NANO_BANANA_API_KEY`：
+确认 `.env` 中有 `NANO_BANANA_API_KEY` 和 `NANO_BANANA_BASE_URL`：
 ```bash
-test -f .env && grep -q "NANO_BANANA_API_KEY" .env
+test -f .env && grep -q "NANO_BANANA_API_KEY" .env && grep -q "NANO_BANANA_BASE_URL" .env
 ```
 
 ### 步骤2：生成角色图（第一批，无外部依赖）

@@ -43,11 +43,12 @@
 ```python
 from openai import OpenAI
 import base64
+import os
 
 # 初始化客户端
 client = OpenAI(
     api_key="your-api-key",
-    base_url="https://537-ai.net/v1"
+    base_url=os.environ["NANO_BANANA_BASE_URL"]
 )
 
 # 读取并编码图片
@@ -236,7 +237,7 @@ print(prompt)
 
 1. **图片格式**：支持 PNG、JPG、JPEG、WEBP、GIF 等常见格式
 2. **图片大小**：建议不超过 10MB，过大的图片可能导致 API 调用失败
-3. **API Key**：必须在 `.env` 文件中配置 `NANO_BANANA_API_KEY`
+3. **API 配置**：必须在 `.env` 或环境变量中配置 `NANO_BANANA_API_KEY` 和 `NANO_BANANA_BASE_URL`
 4. **敏感内容**：避免分析包含敏感内容的图片
 5. **版权问题**：确保图片来源合法，避免侵权
 

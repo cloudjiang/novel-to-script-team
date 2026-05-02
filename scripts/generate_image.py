@@ -19,7 +19,6 @@ generate_image.py — 调用 nano banana API 生成图片（支持并行 + 依�
 import argparse
 import base64
 import json
-import os
 import re
 import sys
 from pathlib import Path
@@ -30,30 +29,20 @@ except ImportError:
     print("错误：需要 requests 库。请运行: pip install requests", file=sys.stderr)
     sys.exit(1)
 
-API_URL = "https://537-ai.net/v1/chat/completions"
-MODEL = "gemini-3.1-flash-image-preview"
+try:
+    from .env_config import chat_completions_url, get_optional_env, get_required_env, load_env
+except ImportError:
+    from env_config import chat_completions_url, get_optional_env, get_required_env, load_env
+
+DEFAULT_IMAGE_MODEL = "gemini-3.1-flash-image-preview"
 
 
-def load_api_key():
-    """从 .env 文件读取 API key"""
-    env_path = Path(__file__).resolve().parent.parent / ".env"
-    if not env_path.exists():
-        env_path = Path(".env")
-    if not env_path.exists():
-        print(f"错误：找不到 .env 文件", file=sys.stderr)
-        sys.exit(1)
-
-    with open(env_path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line.startswith("#") or "=" not in line:
-                continue
-            key, _, value = line.partition("=")
-            if key.strip() == "NANO_BANANA_API_KEY":
-                return value.strip()
-
-    print("错误：.env 中未找到 NANO_BANANA_API_KEY", file=sys.stderr)
-    sys.exit(1)
+def load_image_api_config():
+    env = load_env()
+    api_key = get_required_env(env, "NANO_BANANA_API_KEY")
+    api_url = chat_completions_url(get_required_env(env, "NANO_BANANA_BASE_URL"))
+    model = get_optional_env(env, "NANO_BANANA_IMAGE_MODEL", DEFAULT_IMAGE_MODEL)
+    return api_key, api_url, model
 
 
 def encode_image_to_base64(image_path):
@@ -234,7 +223,7 @@ def parse_prompts_from_md(filepath):
     return prompts
 
 
-def generate_image(api_key, prompt_text, reference_images=None, timeout=360):
+def generate_image(api_key, api_url, model, prompt_text, reference_images=None, timeout=360):
     """调用 API 生成图片，返回 base64 图片数据。纯透传，不添加额外指令。
 
     reference_images: 单个路径字符串或路径列表
@@ -259,7 +248,7 @@ def generate_image(api_key, prompt_text, reference_images=None, timeout=360):
     })
 
     payload = {
-        "model": MODEL,
+        "model": model,
         "messages": [{"role": "user", "content": messages_content}],
         "response_modalities": ["IMAGE", "TEXT"],
     }
@@ -269,7 +258,7 @@ def generate_image(api_key, prompt_text, reference_images=None, timeout=360):
         "Content-Type": "application/json",
     }
 
-    resp = requests.post(API_URL, headers=headers, json=payload, timeout=timeout)
+    resp = requests.post(api_url, headers=headers, json=payload, timeout=timeout)
     resp.raise_for_status()
     data = resp.json()
 
@@ -364,7 +353,7 @@ def build_waves(prompts, id_to_path):
     return waves, item_keys
 
 
-def generate_one_item(api_key, p, idx, total, prefix, output_dir, id_to_path,
+def generate_one_item(api_key, api_url, model, p, idx, total, prefix, output_dir, id_to_path,
                       reference_image_override, timeout):
     """生成单个条目的图片。返回 (idx, success, outpath_or_none)"""
     suffix = p["item_id"] if p["item_id"] else f"{idx+1:02d}"
@@ -421,7 +410,7 @@ def generate_one_item(api_key, p, idx, total, prefix, output_dir, id_to_path,
 
     try:
         img_data = generate_image(
-            api_key, actual_prompt,
+            api_key, api_url, model, actual_prompt,
             ref_images if ref_images else None,
             timeout=timeout
         )
@@ -460,7 +449,7 @@ def main():
         print("错误：必须指定 --prompt 或 --prompt-file", file=sys.stderr)
         sys.exit(1)
 
-    api_key = load_api_key()
+    api_key, api_url, model = load_image_api_config()
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -558,7 +547,7 @@ def main():
             for idx in runnable:
                 f = executor.submit(
                     generate_one_item,
-                    api_key, prompts[idx], idx, total, args.prefix,
+                    api_key, api_url, model, prompts[idx], idx, total, args.prefix,
                     output_dir, id_to_path, args.reference_image, args.timeout
                 )
                 futures[f] = idx
@@ -584,7 +573,7 @@ def main():
                 for attempt in range(1, args.max_retries + 1):
                     print(f"  🔄 重试 ({attempt}/{args.max_retries}): {p['name'][:40]}")
                     _, retry_ok, retry_path = generate_one_item(
-                        api_key, p, idx, total, args.prefix,
+                        api_key, api_url, model, p, idx, total, args.prefix,
                         output_dir, id_to_path, args.reference_image, args.timeout
                     )
                     if retry_ok and retry_path:

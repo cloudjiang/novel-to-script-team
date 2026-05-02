@@ -19,7 +19,6 @@ reverse_prompt.py — 从图片反推生成提示词
 import argparse
 import base64
 import json
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -30,30 +29,12 @@ except ImportError:
     print("错误：需要 openai 库。请运行: pip install openai", file=sys.stderr)
     sys.exit(1)
 
-API_URL = "https://537-ai.net/v1"
-MODEL = "gemini-3.1-pro-preview"
+try:
+    from .env_config import get_optional_env, get_required_env, load_env
+except ImportError:
+    from env_config import get_optional_env, get_required_env, load_env
 
-
-def load_api_key():
-    """从 .env 文件读取 API key"""
-    env_path = Path(__file__).resolve().parent.parent / ".env"
-    if not env_path.exists():
-        env_path = Path(".env")
-    if not env_path.exists():
-        print(f"错误：找不到 .env 文件", file=sys.stderr)
-        sys.exit(1)
-
-    with open(env_path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line.startswith("#") or "=" not in line:
-                continue
-            key, _, value = line.partition("=")
-            if key.strip() == "NANO_BANANA_API_KEY":
-                return value.strip()
-
-    print("错误：.env 中未找到 NANO_BANANA_API_KEY", file=sys.stderr)
-    sys.exit(1)
+DEFAULT_REVERSE_MODEL = "gemini-3.1-pro-preview"
 
 
 def encode_image_to_base64(image_path):
@@ -216,7 +197,7 @@ def get_analysis_prompt(mode):
     return prompts.get(mode, prompts["full"])
 
 
-def reverse_prompt(api_key, image_path, mode="full"):
+def reverse_prompt(api_key, base_url, model, image_path, mode="full"):
     """调用 API 从图片反推提示词"""
     print(f"正在分析图片: {image_path}")
     print(f"分析维度: {mode}")
@@ -228,7 +209,7 @@ def reverse_prompt(api_key, image_path, mode="full"):
     # 初始化客户端
     client = OpenAI(
         api_key=api_key,
-        base_url=API_URL
+        base_url=base_url
     )
 
     # 构建消息
@@ -250,7 +231,7 @@ def reverse_prompt(api_key, image_path, mode="full"):
     print("调用 API...")
     try:
         response = client.chat.completions.create(
-            model=MODEL,
+            model=model,
             messages=messages
         )
         prompt_text = response.choices[0].message.content
@@ -311,11 +292,14 @@ def main():
 
     args = parser.parse_args()
 
-    # 加载 API key
-    api_key = load_api_key()
+    # 加载 API 配置
+    env = load_env()
+    api_key = get_required_env(env, "NANO_BANANA_API_KEY")
+    base_url = get_required_env(env, "NANO_BANANA_BASE_URL")
+    model = get_optional_env(env, "NANO_BANANA_REVERSE_MODEL", DEFAULT_REVERSE_MODEL)
 
     # 反推提示词
-    prompt_text = reverse_prompt(api_key, args.image, args.mode)
+    prompt_text = reverse_prompt(api_key, base_url, model, args.image, args.mode)
 
     # 保存提示词
     output_file = save_prompt(prompt_text, args.image, args.output_dir, args.mode)

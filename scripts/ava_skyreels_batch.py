@@ -1,32 +1,42 @@
 #!/usr/bin/env python3
 import argparse
 import json
-import os
 import time
 from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
 
-SUBMIT_URL = "https://api-gateway.skyreels.ai/api/v1/video/image2video/submit"
-TASK_URL = "https://api-gateway.skyreels.ai/api/v1/video/image2video/task/{task_id}"
-TMPFILES_UPLOAD_URL = "https://tmpfiles.org/api/v1/upload"
-CATBOX_UPLOAD_URL = "https://catbox.moe/user/api.php"
+try:
+    from .env_config import get_optional_env, get_required_env, load_env
+except ImportError:
+    from env_config import get_optional_env, get_required_env, load_env
+
+DEFAULT_SKYREELS_BASE_URL = "https://api-gateway.skyreels.ai/api/v1"
+DEFAULT_TMPFILES_UPLOAD_URL = "https://tmpfiles.org/api/v1/upload"
+DEFAULT_CATBOX_UPLOAD_URL = "https://catbox.moe/user/api.php"
+
+SUBMIT_URL = ""
+TASK_URL = ""
+TMPFILES_UPLOAD_URL = ""
+CATBOX_UPLOAD_URL = ""
 
 
-def load_env_key(name: str) -> str:
-    env_path = Path('.env')
-    if env_path.exists():
-        for line in env_path.read_text(encoding='utf-8').splitlines():
-            if '=' not in line or line.strip().startswith('#'):
-                continue
-            k, v = line.split('=', 1)
-            if k.strip() == name:
-                return v.strip()
-    val = os.getenv(name)
-    if val:
-        return val
-    raise SystemExit(f"missing env key: {name}")
+def configure_services(env: dict) -> None:
+    global SUBMIT_URL, TASK_URL, TMPFILES_UPLOAD_URL, CATBOX_UPLOAD_URL
+    skyreels_base = get_optional_env(env, "SKYREELS_BASE_URL", DEFAULT_SKYREELS_BASE_URL).rstrip("/")
+    SUBMIT_URL = get_optional_env(
+        env,
+        "SKYREELS_SUBMIT_URL",
+        f"{skyreels_base}/video/image2video/submit",
+    )
+    TASK_URL = get_optional_env(
+        env,
+        "SKYREELS_TASK_URL",
+        f"{skyreels_base}/video/image2video/task/{{task_id}}",
+    )
+    TMPFILES_UPLOAD_URL = get_optional_env(env, "TMPFILES_UPLOAD_URL", DEFAULT_TMPFILES_UPLOAD_URL)
+    CATBOX_UPLOAD_URL = get_optional_env(env, "CATBOX_UPLOAD_URL", DEFAULT_CATBOX_UPLOAD_URL)
 
 
 def to_tmpfiles_dl(url: str) -> str:
@@ -122,7 +132,9 @@ def main():
     parser.add_argument('--poll-interval', type=int, default=25)
     args = parser.parse_args()
 
-    api_key = load_env_key('SKYREELS_API_KEY')
+    env = load_env()
+    configure_services(env)
+    api_key = get_required_env(env, 'SKYREELS_API_KEY')
     jobs = json.loads(Path(args.jobs).read_text(encoding='utf-8'))
     outdir = Path(args.output_dir)
     outdir.mkdir(parents=True, exist_ok=True)

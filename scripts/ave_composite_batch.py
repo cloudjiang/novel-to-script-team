@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scripts.generate_image import load_api_key, generate_image
+from scripts.generate_image import generate_image, load_image_api_config
 
 
 def build_prompt(job):
@@ -22,7 +22,7 @@ def build_prompt(job):
     return f"""Reference image 1 is the exact AVE hardware base plate and must remain dominant. Create a premium realistic hardware still for the AVE handheld AI trading terminal. Preserve the hardware identity from image 1 exactly: transparent shell, visible purple internal layers, white-capped thumb joystick with pale green base ring on the left, right-side clustered buttons, bezel depth, camera angle, framing, lighting, reflections, and material layering. Do not redesign the hardware. Clean up any temporary greenscreen or technical placeholder feel inside the display area and replace it with a believable dark inactive display glass or a minimal neutral system-dark screen treatment, depending on what best supports the shot. Remove any distracting technical annotation text from the asset if present. Intended role: {role}. Screen priority: {ui_priority}. Hardware mood: {hardware_note}. Keep the image premium, restrained, manufacturable, and ad-ready. Avoid sci-fi HUD graphics, extra floating overlays, toy-like proportions, altered device geometry, distorted bezel, cheap plastic feel, or noisy engineering clutter."""
 
 
-def run_job(api_key, job, output_dir, timeout):
+def run_job(api_key, api_url, model, job, output_dir, timeout):
     plate = Path(job["plate"])
     screen_value = job.get("screen")
     screen = Path(screen_value) if screen_value else None
@@ -42,7 +42,7 @@ def run_job(api_key, job, output_dir, timeout):
     refs = [str(plate)]
     if screen:
         refs.append(str(screen))
-    img = generate_image(api_key, prompt, reference_images=refs, timeout=timeout)
+    img = generate_image(api_key, api_url, model, prompt, reference_images=refs, timeout=timeout)
     if not img:
         return {"id": job["id"], "status": "failed", "output": str(out)}
 
@@ -64,7 +64,7 @@ def main():
     parser.add_argument("--skip-existing", action="store_true")
     args = parser.parse_args()
 
-    api_key = load_api_key()
+    api_key, api_url, model = load_image_api_config()
     jobs_path = Path(args.jobs)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -81,7 +81,7 @@ def main():
     print(f"running {len(runnable)} jobs with max_workers={args.max_workers}")
     results = []
     with ThreadPoolExecutor(max_workers=args.max_workers) as ex:
-        futs = {ex.submit(run_job, api_key, job, output_dir, args.timeout): job for job in runnable}
+        futs = {ex.submit(run_job, api_key, api_url, model, job, output_dir, args.timeout): job for job in runnable}
         for fut in as_completed(futs):
             job = futs[fut]
             try:
