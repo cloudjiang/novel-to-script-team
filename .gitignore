@@ -1,0 +1,47 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+ENV/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Agent/local runtime state
+.agent-state.json
+.search_index/
+.claude/
+.codex
+
+# Generated/internal documentation
+docs/
+
+# Generated project outputs
+outputs/
+output/
+
+# Non-distributed source corpus and raw intake
+sources/
+pending-knowledge/
+knowledge/hit-scripts-md/
+
+# Optional local external skills
+skills/tvc-director/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
