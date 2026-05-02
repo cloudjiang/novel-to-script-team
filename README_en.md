@@ -18,27 +18,17 @@ Use it for:
 
 ## Core Capabilities
 
-- **Adaptation analysis**: genre, plotline, character relationships, world rules, conflicts, and filmability risks.
-- **Insight extraction**: visible narrative, hidden truth, audience expectations, emotional hooks, and core conflict.
-- **Episode planning**: episode outlines, project progress, cliffhangers, retention strategy, and pacing.
-- **Emotional design**: emotional curves, suspense strategy, expectation management, and cognitive-load control.
-- **Script writing**: episode-by-episode script generation with optional reference retrieval from your own licensed corpus.
-- **Visual rewrite**: converts abstract emotion into visible action, props, beats, expressions, and scenes.
-- **Layered review**: business review, compliance review, style analysis, one-by-one comparison, and final review.
-- **Continuity tracking**: character settings, forms of address, props, timeline, foreshadowing, and cross-episode consistency.
-- **Storyboard/video handoff**: supports both a film-storyboard flow and a Seedance prompt flow.
-- **Optional media tools**: image generation, image-to-prompt reverse prompting, and SkyReels batch scripts.
-
-## Why It Stands Out
-
-- **A production system, not a prompt pack**: each stage has clear inputs, deliverables, owner agents, review gates, and revision paths.
-- **End-to-end text-to-video preparation**: covers adaptation analysis, insight extraction, episode planning, emotional design, episode scripts, continuity, storyboards, frame requests, and video prompts.
-- **Local hit-script retrieval**: add your own licensed corpus under `knowledge/hit-scripts-md/` so writing can reference pacing, hooks, payoff, and phrasing patterns.
-- **Review is built into the loop**: business review, compliance review, style analysis, one-by-one comparison, and final review drive revision instead of merely reporting issues.
-- **Visual storytelling first**: dedicated Show Don’t Tell checks turn psychology into visible action, expressions, props, scenes, and camera language.
-- **Provider-neutral media tooling**: API keys, base URLs, models, and service endpoints for image generation, reverse prompting, and video batching are configurable via `.env` or process env.
+- **Structured adaptation, not one-shot prompting**: the workflow breaks adaptation into analysis, insight extraction, episode planning, emotional design, script writing, review, continuity tracking, and storyboard/video handoff; every stage has clear inputs, deliverables, owner agents, and revision paths.
+- **From source text to video-ready assets**: the same pipeline can produce adaptation analysis, episode outlines, scripts, review reports, character/scene/prop prompts, storyboard plans, frame requests, and video prompts.
+- **Adaptation analysis**: extracts genre, plotline, character relationships, world rules, core conflict, and filmability risks before deciding how the story should become screen material.
+- **Insight and emotional design**: identifies visible narrative, hidden truth, emotional hooks, audience expectations, suspense chains, and cognitive-load strategy.
+- **Episode planning and script writing**: creates episode outlines, cliffhangers, pacing, and short-drama/webtoon-style scripts; writing can retrieve local licensed hit-script references for pacing, hooks, payoff, and phrasing.
+- **Visual rewrite**: dedicated Show Don't Tell checks convert abstract psychology into visible action, expressions, props, scenes, and camera language.
+- **Layered review loop**: business review, compliance review, style analysis, one-by-one comparison, and final review happen throughout the process; failed checks route back to revision instead of becoming final-only advice.
+- **Continuity tracking**: records character settings, forms of address, props, timeline, foreshadowing, and setting changes to reduce cross-episode drift.
+- **Two storyboard/video routes**: supports a film-storyboard route and a Seedance/Sora/image-to-video prompt route.
+- **Replaceable media providers**: image generation, reverse prompting, and SkyReels batch scripts configure API keys, base URLs, models, and endpoints through `.env` or process env.
 - **Resumable multi-agent workspace**: `outputs/{script_name}/.agent-state.json` preserves project context for long-running adaptation work.
-- **Clear open-source boundary**: the repo provides methodology and tools; corpora, secrets, generated outputs, and provider accounts stay under the user's control.
 
 ## Open-Source Notes
 
@@ -164,42 +154,41 @@ python3 -m py_compile scripts/*.py
 python3 scripts/quick_search.py "rebirth revenge wealthy-family"
 ```
 
+## How Agent / Skill / Reference Work Together
+
+GitHub Markdown files support diagrams from `mermaid` code blocks, so the architecture and workflow below render directly on GitHub.
+
+```mermaid
+flowchart LR
+  User["Creator / Agent User"] --> Command["Command<br/>~analyze / ~plan / ~write N / ~storyboard-*"]
+  Command --> Agent["Agent<br/>Specialized role and stage owner"]
+  Agent --> Skill["Skill<br/>Execution steps / checklists / deliverable format"]
+  Agent --> Reference["Reference<br/>Methodology / standards / compliance boundaries"]
+  Reference --> Skill
+  Skill --> Script["Scripts<br/>Retrieval / image generation / reverse prompting / video batch"]
+  Agent --> Output["outputs/{script_name}<br/>Stage deliverables / review reports / state"]
+  Output --> Agent
+```
+
+In short: **Agents decide who owns the work, Skills define how to execute it, References define quality standards, Scripts automate tool actions, and Outputs preserve project memory and deliverables.**
+
 ## Workflow Overview
 
-```text
-Stage 0: Knowledge Ingestion (optional)
-~ingest / ~ingest-pending
-knowledge-curator -> knowledge/ -> references/skills
-        |
-        v
-Stage 1: Adaptation Analysis
-~analyze
-novel-analyzer -> insight-architect -> review-director
-        |
-        v
-Stage 2: Episode Planning
-~plan
-episode-architect -> emotion-architect -> review-director
-        |
-        v
-Stage 3: Episode Writing
-~write N
-script-writer -> visual-storyteller -> review-director -> continuity-recorder
-        |
-        v
-Stage 4: Final Review
-~review N
-script-writer -> script-comparator -> review-director
-        |
-        v
-Stage 5: Storyboard / Video Handoff
-~storyboard-film N or ~storyboard-seedance N
-storyboard-director / storyboard-artist / art-designer / animator / image-generator
-        |
-        v
-Stage 6: Final Check
-~final-check
-encoding check -> naming consistency -> file completeness -> final-check-report.md
+```mermaid
+flowchart TD
+  A["Stage 0 Optional<br/>Knowledge ingestion<br/>~ingest / ~ingest-pending"] --> B["Stage 1<br/>Adaptation analysis<br/>novel-analyzer + insight-architect"]
+  B --> C["Stage 2<br/>Episode planning<br/>episode-architect + emotion-architect"]
+  C --> D["Stage 3<br/>Episode writing<br/>script-writer + visual-storyteller"]
+  D --> E{"Review passed?"}
+  E -- "No" --> D
+  E -- "Yes" --> F["Continuity record<br/>continuity-recorder"]
+  F --> G["Stage 4<br/>Final / comparison review<br/>script-comparator + review-director"]
+  G --> H{"Storyboard route?"}
+  H -- "Film storyboard" --> I["Stage 5A<br/>Film Storyboard<br/>Beat / Board / Motion"]
+  H -- "Seedance" --> J["Stage 5B<br/>Seedance Flow<br/>Director analysis / art design / frame requests / prompts"]
+  I --> K["Stage 6<br/>Final check<br/>encoding / naming / file completeness"]
+  J --> K
+  K --> L["final-check-report.md"]
 ```
 
 ## Two Storyboard Routes

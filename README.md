@@ -18,27 +18,17 @@ Novel-to-Script-Team 不是单个提示词，而是一套可复用的创作生�
 
 ## 核心能力
 
-- **改编分析**：提取题材、主线、人物关系、世界规则、核心冲突、可拍性问题。
-- **洞察提炼**：用“开天眼”方式拆出显性叙事、隐藏真相、爽点/虐点、观众预期。
-- **分集规划**：生成分集目录、项目进度、单集钩子、悬念链路和节奏设计。
-- **情绪设计**：设计情绪曲线、心理预期管理、认知负荷控制，辅助每集留存。
-- **剧本写作**：按集生成短剧/漫剧剧本，并可参考本地授权语料进行节奏模仿。
-- **视觉化改写**：检查“说出来”的情绪，改成能被镜头拍到的动作、表情、场面。
-- **多层审核**：业务审核、合规审核、风格分析、逐一对比、综合复核。
-- **连续性维护**：记录称呼、人设、道具、时间线、伏笔、设定变化，避免跨集漂移。
-- **分镜视频化**：支持标准影视分镜流和 Seedance 提示词流。
-- **图片/视频工具**：可选调用图片生成、图片反推、SkyReels 批处理等脚本。
-
-## 项目卖点
-
-- **不是提示词合集，而是生产系统**：每个阶段都有明确输入、产物、责任 Agent、审核门槛和回改路径，适合团队协作和重复交付。
-- **从文字到视频前置资产全覆盖**：覆盖改编分析、洞察、分集、情绪设计、单集剧本、连续性、分镜、帧图需求和视频提示词。
-- **爆款参考可本地化**：可把自有授权剧本放入 `knowledge/hit-scripts-md/`，让写作阶段检索节奏、钩子、爽点、虐点和表达方式。
-- **审核不是事后补丁**：业务审核、合规审核、风格分析、逐一对比、综合复核贯穿流程，失败后进入回改而不是直接交付。
-- **视觉化导向**：专门检查 Show Don’t Tell，把心理描写转成动作、表情、道具、场面和镜头语言。
-- **平台中立、可替换 Provider**：图片生成、图片反推、视频批处理的 API Key、Base URL、模型和端点均可通过 `.env` 或环境变量配置。
+- **结构化改编，而不是一次性提示词**：把小说改编拆成改编分析、洞察提炼、分集规划、情绪设计、剧本写作、审核、连续性维护和分镜视频化，每个阶段都有明确输入、产物、责任 Agent 和回改路径。
+- **从原文到视频前置资产**：同一套流程可以产出改编分析、分集大纲、单集剧本、审核报告、人物/场景/道具提示词、分镜方案、帧图需求和视频提示词。
+- **改编分析**：提取题材、主线、人物关系、世界规则、核心冲突、可拍性问题，先判断故事适合怎么影视化。
+- **洞察与情绪设计**：用“开天眼”方式拆出显性叙事、隐藏真相、爽点/虐点、观众预期，并设计情绪曲线、悬念链路和认知负荷。
+- **分集规划与剧本写作**：生成分集目录、单集钩子、推进节奏和短剧/漫剧剧本；写作阶段可检索本地授权爆款剧本，参考节奏、钩子、爽点和表达方式。
+- **视觉化改写**：专门检查 Show Don't Tell，把抽象心理描写改成能被镜头拍到的动作、表情、道具、场面和镜头语言。
+- **多层审核闭环**：业务审核、合规审核、风格分析、逐一对比、综合复核贯穿流程；未达标时回到对应阶段修改，而不是只在最后给建议。
+- **连续性维护**：记录称呼、人设、道具、时间线、伏笔、设定变化，降低长项目跨集漂移。
+- **两条分镜视频化路线**：支持标准影视分镜流，也支持面向 Seedance/Sora/图生视频的提示词流。
+- **可替换媒体 Provider**：图片生成、图片反推、SkyReels 批处理等脚本均通过 `.env` 或环境变量配置 API Key、Base URL、模型和端点。
 - **可恢复的多 Agent 工作台**：通过 `outputs/{剧本名}/.agent-state.json` 保存项目上下文，支持长项目分阶段继续。
-- **开源安全边界清晰**：仓库提供方法论和工具；语料、密钥、运行产物、供应商账号都由使用者本地配置。
 
 ## 开源版说明
 
@@ -164,42 +154,41 @@ python3 -m py_compile scripts/*.py
 python3 scripts/quick_search.py "重生 复仇 豪门"
 ```
 
+## Agent / Skill / Reference 如何协作
+
+GitHub Markdown 文件支持 `mermaid` 代码块渲染图表，所以下面的架构和流程图会在 GitHub 页面中直接显示。
+
+```mermaid
+flowchart LR
+  User["创作者 / Agent 使用者"] --> Command["命令<br/>~analyze / ~plan / ~write N / ~storyboard-*"]
+  Command --> Agent["Agent<br/>专业角色与阶段负责人"]
+  Agent --> Skill["Skill<br/>执行步骤 / 检查表 / 产物格式"]
+  Agent --> Reference["Reference<br/>方法论 / 标准 / 合规边界"]
+  Reference --> Skill
+  Skill --> Script["Scripts<br/>检索 / 生图 / 反推 / 视频批处理"]
+  Agent --> Output["outputs/{剧本名}<br/>阶段产物 / 审核报告 / 状态"]
+  Output --> Agent
+```
+
+协作关系可以理解为：**Agent 决定谁来负责，Skill 决定怎么执行，Reference 决定判断标准，Scripts 处理可自动化的工具动作，Outputs 保存项目记忆和交付物。**
+
 ## 工作流总览
 
-```text
-阶段0：知识收编（可选）
-~ingest / ~ingest-pending
-knowledge-curator -> knowledge/ -> references/skills
-        |
-        v
-阶段1：改编分析
-~analyze
-novel-analyzer -> insight-architect -> review-director
-        |
-        v
-阶段2：分集规划
-~plan
-episode-architect -> emotion-architect -> review-director
-        |
-        v
-阶段3：写集
-~write N
-script-writer -> visual-storyteller -> review-director -> continuity-recorder
-        |
-        v
-阶段4：总复核
-~review N
-script-writer -> script-comparator -> review-director
-        |
-        v
-阶段5：分镜视频化
-~storyboard-film N 或 ~storyboard-seedance N
-storyboard-director / storyboard-artist / art-designer / animator / image-generator
-        |
-        v
-阶段6：完成检查
-~final-check
-乱码检查 -> 称呼一致性 -> 文件完整性 -> final-check-report.md
+```mermaid
+flowchart TD
+  A["阶段0 可选<br/>知识收编<br/>~ingest / ~ingest-pending"] --> B["阶段1<br/>改编分析<br/>novel-analyzer + insight-architect"]
+  B --> C["阶段2<br/>分集规划<br/>episode-architect + emotion-architect"]
+  C --> D["阶段3<br/>单集写作<br/>script-writer + visual-storyteller"]
+  D --> E{"审核通过?"}
+  E -- "否" --> D
+  E -- "是" --> F["连续性记录<br/>continuity-recorder"]
+  F --> G["阶段4<br/>总复核 / 对比审核<br/>script-comparator + review-director"]
+  G --> H{"进入分镜?"}
+  H -- "标准分镜" --> I["阶段5A<br/>Film Storyboard<br/>Beat / Board / Motion"]
+  H -- "Seedance" --> J["阶段5B<br/>Seedance Flow<br/>导演分析 / 服化道 / 帧图需求 / 提示词"]
+  I --> K["阶段6<br/>完成检查<br/>乱码 / 称呼 / 文件完整性"]
+  J --> K
+  K --> L["final-check-report.md"]
 ```
 
 ## 两条分镜路线
