@@ -56,11 +56,13 @@ cp .env.example .env
 
 ### 快速开始
 
-查看系统配置：
+查看 Agent 工作流配置：
 
 ```bash
-cat CLAUDE.md
+cat AGENTS.md
 ```
+
+`CLAUDE.md` 仅作为 Claude Code 的兼容入口，实际规则以 `AGENTS.md` 为准。
 
 常用工作流：
 
@@ -98,7 +100,8 @@ python3 scripts/quick_search.py "重生 复仇 豪门"
 
 ```text
 novel-to-script-team/
-├── CLAUDE.md                    # 系统配置与工作流
+├── AGENTS.md                    # 通用 Agent 工作流指南
+├── CLAUDE.md                    # Claude Code 兼容入口
 ├── SKILL.md                     # 项目入口说明
 ├── AGENT-STATE-GUIDE.md         # Resumable Subagents 指南
 ├── agents/                      # Agent 角色定义
@@ -183,11 +186,13 @@ cp .env.example .env
 
 ### Quick Start
 
-Inspect the system configuration:
+Inspect the agent workflow configuration:
 
 ```bash
-cat CLAUDE.md
+cat AGENTS.md
 ```
+
+`CLAUDE.md` is kept only as a Claude Code compatibility adapter; `AGENTS.md` is the canonical guide.
 
 Typical workflow:
 
@@ -225,7 +230,8 @@ Main directories:
 
 ```text
 novel-to-script-team/
-├── CLAUDE.md                    # System configuration and workflow
+├── AGENTS.md                    # General agent workflow guide
+├── CLAUDE.md                    # Claude Code compatibility adapter
 ├── SKILL.md                     # Project entry point
 ├── AGENT-STATE-GUIDE.md         # Resumable Subagents guide
 ├── agents/                      # Agent role definitions

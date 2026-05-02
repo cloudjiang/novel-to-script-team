@@ -6,8 +6,9 @@ description: 完整的多Agent多Skill小说改编项目。开源版运行时依
 # novel-to-script-team
 
 ## 运行入口
-1. `./CLAUDE.md`
-2. `./skills/novel-to-script-orchestrator-skill/SKILL.md`
+1. `./AGENTS.md`：平台无关的 Agent 总入口（推荐）
+2. `./CLAUDE.md`：Claude Code 兼容入口，会指向 `AGENTS.md`
+3. `./SKILL.md`：项目 Skill 元信息
 
 ## 执行序列
 `~ingest -> ~analyze -> ~plan -> ~write N -> ~review N -> ~storyboard-film N` 或 `~storyboard-seedance N`（可选 `~generate-images N`）
