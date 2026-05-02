@@ -29,22 +29,59 @@ Use it for:
 - **Storyboard/video handoff**: supports both a film-storyboard flow and a Seedance prompt flow.
 - **Optional media tools**: image generation, image-to-prompt reverse prompting, and SkyReels batch scripts.
 
-## Open-Source Distribution Notes
+## Open-Source Notes
 
-This repository ships the Agent/Skill workflow, core reference methodology, and utility scripts. The following local or proprietary materials are intentionally excluded from Git:
+This repository provides the Agent/Skill workflow, core reference methodology, and utility scripts for novel adaptation, script review, storyboard planning, and video-prompt generation. Generated outputs are written locally under `outputs/{script_name}/`; image/video scripts require the relevant API keys in `.env`.
 
-- `outputs/`, `output/`: generated scripts, storyboards, images, videos, and reports.
-- `docs/`: internal audits, integration reports, and temporary design documents.
-- `sources/`, `pending-knowledge/`: raw source corpus and pending ingestion material.
-- `knowledge/hit-scripts-md/`: third-party or project-specific script corpus; provide your own licensed files.
-- `.search_index/`, `.agent-state.json`, `.env`: local indexes, runtime state, and secrets.
+### Using Hit-Script Retrieval
 
-The open-source version can run the base workflow. If the local hit-script corpus is missing, retrieval scripts print a friendly setup message instead of crashing. To enable reference-script retrieval, create:
+The script-writing stage can use `hit-script-retrieval-skill` to retrieve reference samples from your own licensed script corpus. This helps the agent study pacing, hooks, emotional payoff, and phrasing. The repository does not include script corpus files; add your own authorized `.md` files here:
 
 ```bash
 mkdir -p knowledge/hit-scripts-md
-# Add .md script files that you are licensed to use.
 ```
+
+Recommended layout:
+
+```text
+knowledge/hit-scripts-md/
+├── female-rebirth-revenge-001.md
+├── female-wealthy-romance-001.md
+├── male-warrior-return-001.md
+└── suspense-supernatural-twist-001.md
+```
+
+Recommended file shape:
+
+```markdown
+# Title or Case Name
+
+## Tags
+female / rebirth / revenge / wealthy-family / romance
+
+## Structure Notes
+- Opening hook: ...
+- Core conflict: ...
+- Twist point: ...
+
+## Script Body or Excerpt
+...
+```
+
+After adding files, test retrieval manually:
+
+```bash
+python3 scripts/quick_search.py "rebirth revenge wealthy-family"
+python3 scripts/improved_hybrid_search.py "rebirth revenge wealthy-family" female
+```
+
+Parameter notes:
+
+- `quick_search.py`: lightweight keyword retrieval; no vector index required; useful for checking whether files are in the right place.
+- `improved_hybrid_search.py`: hybrid retrieval using keywords, semantic features, and gender-frequency classification; the second argument can be `male`, `female`, or `all`.
+- The first hybrid-search run creates a local `.search_index/`; later runs reuse that local index.
+
+During the Agent workflow, `~write N` attempts to retrieve the Top 5 reference scripts first. If no corpus is available, it skips reference retrieval and continues with the base writing flow.
 
 ## Quick Start
 
